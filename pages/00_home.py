@@ -2,11 +2,11 @@ import pandas as pd
 import plotly.graph_objects as go
 import networkx as nx
 import solara
-from datasets import load_dataset
 
-dataset = load_dataset("csv", data_files="portalWebMaps_Test.csv")
+
+
 # Assuming you have already imported the necessary libraries and read the data
-dfwm = pd.read_csv(dataset)
+dfwm = pd.read_csv("https://huggingface.co/spaces/tfjackc/solara-geospatial/blob/main/portalWebMaps_Test.csv")
 dfsubset = dfwm[['map_title', 'service_title', 'layer_url']]
 
 G = nx.Graph()
