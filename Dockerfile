@@ -4,8 +4,14 @@ RUN mamba install -c conda-forge leafmap geopandas localtileserver beautifulsoup
     fix-permissions "${CONDA_DIR}" && \
     fix-permissions "/home/${NB_USER}"
 
+
+
 COPY requirements.txt .
 RUN pip install -r requirements.txt
+
+FROM ubuntu:latest
+RUN apt-get -y update
+RUN apt-get -y install git
 
 RUN mkdir ./pages
 COPY /pages ./pages
