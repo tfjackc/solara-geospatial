@@ -10,6 +10,8 @@ RUN pip install -r requirements.txt
 RUN mkdir ./pages
 COPY /pages ./pages
 
+COPY /portalWebMaps_Test.csv /data/portalWebMaps_Test.csv
+
 ENV PROJ_LIB='/opt/conda/share/proj'
 
 USER root
