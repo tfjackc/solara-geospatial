@@ -10,13 +10,7 @@ dfwm = pd.read_csv("data/portalWebMaps_Test.csv")
 dfsubset = dfwm[['map_title', 'service_title', 'layer_url', 'share_settings', 'number_of_views']]
 dfsubset_san = dfsubset.sort_values(by=['number_of_views'], ascending=False)
 dfsubset_san['layer_url'] = dfsubset_san['layer_url'].str.replace(r'^.*services/([^/]*)/.*$', r'\1', regex=True)
-#num_breaks = 4
-#dfsubset_san['views_class_breaks'] = pd.cut(dfsubset_san['number_of_views'], bins=num_breaks, precision=0)
-#dfsubset_san['quant_views'] = pd.qcut(dfsubset_san['number_of_views'], q=12, labels=[12,11,10,9,8,7,6,5,4,3,2,1])
-#print(dfsubset_san['quant_views'])
-
 dfsubset_san['quant_views'] = (((dfsubset_san['number_of_views'] / 250000) * 80) + 30)
-
 
 map_titles = dfsubset_san['map_title'].unique()
 webMaps = []
@@ -42,19 +36,20 @@ dfsubset_san['map_color'] = 'rgba(155,194,156,0.5)'
 dfsubset_san['service_color'] = 'rgba(199,85,46,0.5)'
 
 mapdict = dfsubset_san[['map_title', 'map_color']].to_dict('records')
-layerdict = dfsubset_san[['layer_url', 'service_color']].to_dict('records')
-
-#dfdict = dfsubset_san.to_dict()
-#print(dfdict)
+layerdict = dfsubset_san[['service_title', 'service_color']].to_dict('records')
+dfcolors = pd.DataFrame()
+dfcolors[['item', 'colors']] = dfsubset_san[['map_title', 'map_color']]
+dfcolors = pd.concat([dfcolors, dfsubset_san[['layer_url', 'service_color']].rename(columns={'layer_url': 'item', 'service_color': 'colors'})], ignore_index=True)
 
 tab_index = solara.reactive(0)
 
 #spring layout
 G = nx.Graph()
-G = nx.from_pandas_edgelist(dfsubset_san, 'map_title', 'layer_url')
+
+G = nx.from_pandas_edgelist(dfsubset_san, 'map_title', 'service_title')
 
 # 1. Convert the NetworkX graph into a Plotly graph object
-pos = nx.kamada_kawai_layout(G)  # Adjust the layout algorithm as needed
+pos = nx.spring_layout(G)  # Adjust the layout algorithm as needed
 
 edge_x = []
 edge_y = []
@@ -71,18 +66,23 @@ edge_trace = go.Scatter(
     hoverinfo='none',
     mode='lines',
 )
+#print(edge_trace)
 
 node_x = []
 node_y = []
 node_text = []
+node_color = []
+
 for node in G.nodes():
     x, y = pos[node]
     node_x.append(x)
     node_y.append(y)
     node_info = str(node) + "<br># of connections: " + str(len(list(G.neighbors(node))))
     node_text.append(node_info)
-
-#print([10 + 5 * len(list(G.neighbors(node))) for node in G.nodes()])
+    if node in dfsubset_san['map_title'].values:
+        node_color.append(dfsubset_san.loc[dfsubset_san['map_title'] == node, 'map_color'].iloc[0])
+    else:
+        node_color.append(dfsubset_san.loc[dfsubset_san['service_title'] == node, 'service_color'].iloc[0])
 
 node_trace = go.Scatter(
     x=node_x,
@@ -93,7 +93,7 @@ node_trace = go.Scatter(
     marker=dict(
         #size=[10 + 5 * len(list(G.neighbors(node))) for node in G.nodes()],
         size=dfsubset_san['quant_views'],
-        color=dfsubset_san['k_colors']
+        color=node_color
     ),
 )
 
@@ -170,7 +170,7 @@ def Page():
 
                     solara.FigurePlotly(sanfig)
 
-            with solara.lab.Tab("Kamada Kawai Layout", icon_name="mdi-chart-line"):
+            with solara.lab.Tab("Spring Layout", icon_name="mdi-chart-line"):
                 with solara.Card(style="height: 1000px;"):
 
                     solara.FigurePlotly(fig)
