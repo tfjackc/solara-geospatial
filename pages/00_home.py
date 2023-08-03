@@ -5,8 +5,12 @@ import solara
 import solara.lab
 import random
 # Assuming you have already imported the necessary libraries and read the data
-dfwm = pd.read_csv("data/portalWebMaps_Test.csv")
+dfwm = pd.read_csv(r"portalWebMaps_Test.csv")
 dfsubset = dfwm[['map_title', 'service_title', 'layer_url', 'share_settings', 'number_of_views']]
+dfsub = dfwm[['map_title', 'service_title', 'share_settings', 'layer_url', 'number_of_views']]
+dfsubset_san = dfsub.sort_values(by=['number_of_views'], ascending=False)
+dfsubset_san['layer_url'] = dfsubset_san['layer_url'].str.replace(r'^.*services/([^/]*)/.*$', r'\1', regex=True)
+
 tab_index = solara.reactive(0)
 
 #spring layout
@@ -63,83 +67,84 @@ fig = go.Figure(data=[edge_trace, node_trace], layout=go.Layout(
     height=975
 ))
 
-# sankey layout
-dfsubset_san = dfwm[['map_title', 'service_title', 'share_settings', 'layer_url', 'number_of_views']]
-dfsubset_san = dfsubset_san.sort_values(by=['number_of_views'], ascending=False)
+map_titles = dfsubset_san['map_title'].unique()
+webMaps = []
+map_title_to_color = {}
+for title in map_titles:
+    # Generate random RGB values in the range [0, 255]
+    red = random.randint(0, 255)
+    green = random.randint(0, 255)
+    blue = random.randint(0, 255)
+    # Convert RGB values to a valid color format (e.g., HEX or RGBA)
+    color = f'rgba({red},{green},{blue},0.3)'  # You can use HEX format if needed
+    # Assign the random color to the map_title
+    map_title_to_color[title] = color
+    webMaps.append(title)
 
-# 3. Define the Solara component as before
+select_wm = solara.reactive(webMaps)
+dfsubset_san['colors'] = [map_title_to_color[title] for title in dfsubset_san['map_title']]
+
+nodes = []
+links = []
+
+def add_node(node_name):
+    if node_name not in nodes:
+        nodes.append(node_name)
+
+# Helper function to add links
+def add_link(source, target, value, views, color):
+    add_node(source)
+    add_node(target)
+    add_node(views)
+    links.append({"source": nodes.index(source), "target": nodes.index(target), "views": nodes.index(views), "color": color, 'value': value})
+
+# Process the enumerated_items and add nodes and links to the Sankey diagram
+for item in zip(dfsubset_san['map_title'], dfsubset_san['layer_url'], dfsubset_san['number_of_views'], dfsubset_san['service_title'], dfsubset_san['colors']):
+    source = f"{item[0]}"
+    target = f"{item[1]}: {item[3]}"
+    value = 1
+    color = f"{item[4]}"  # Or you can use a value based on some criteria if available in your data
+    views = f"{item[2]}"
+    add_link(source, target, value, views, color)  # First link from source to target
+    add_link(target, views, value, views, color)  # Second link from target to views
+
+# Create the Sankey diagram trace with colors for the links
+sankey_trace = go.Sankey(
+    arrangement="freeform",
+    node=dict(
+        pad=30,
+        thickness=15,
+        line=dict(color="black", width=0.5),
+        label=nodes,
+        color=[link["color"] for link in links]
+
+    ),
+    link=dict(
+        source=[link["source"] for link in links],
+        target=[link["target"] for link in links],
+        value=[link["value"] for link in links],
+        color=[link["color"] for link in links]
+    )
+)
+
+# Create the figure and plot the Sankey diagram
+sanfig = go.Figure(data=[sankey_trace])
+
+sanfig.update_layout(title_text="Web Maps Connections to Layers in Portal",
+                     font_size=18,
+                     height=4000)
+
 @solara.component
 def Page():
     with solara.Column() as main:
         with solara.AppBarTitle():
             solara.Text("Crook County GIS Portal Map")
 
-
-
         with solara.lab.Tabs(background_color="#0A2E52", dark=True):
 
             with solara.lab.Tab("Sankey Layout", icon_name="mdi-chart-line"):
                 with solara.Card(style="height: 1000px;"):
-                    map_titles = dfsubset_san['map_title'].unique()
-                    print(map_titles)
-                    webMaps = []
-                    map_title_to_color = {}
-                    for title in map_titles:
-                        # Generate random RGB values in the range [0, 255]
-                        red = random.randint(0, 255)
-                        green = random.randint(0, 255)
-                        blue = random.randint(0, 255)
-                        # Convert RGB values to a valid color format (e.g., HEX or RGBA)
-                        color = f'rgba({red},{green},{blue},0.8)'  # You can use HEX format if needed
-                        # Assign the random color to the map_title
-                        map_title_to_color[title] = color
-                        webMaps.append(title)
 
-                    select_wm = solara.reactive(webMaps)
-                    # Create a node list containing unique labels and corresponding indices
-                    node_labels = select_wm.value + list(dfsubset_san['layer_url'])
-                    node_indices = list(range(len(select_wm.value))) + list(range(len(dfsubset_san['layer_url'])))
-
-                    # Create a dictionary to map the labels to indices for faster lookup
-                    label_to_index = {label: idx for idx, label in enumerate(node_labels)}
-
-                    # Create a link list with source, target, and value columns
-                    link_list = []
-                    for index, row in dfsubset_san.iterrows():
-                        source = label_to_index[row['map_title']]
-                        target = label_to_index[row['layer_url']]
-                        link_list.append({
-                            'source': source,
-                            'target': target,
-                            'value': 1  # Or you can use a value based on some criteria if available in your data
-                        })
-
-                    # Create the Sankey diagram
-                    sanfig = go.Figure(data=[go.Sankey(
-                        valueformat=".0f",
-                        valuesuffix="TWh",
-                        # Define nodes
-                        node=dict(
-                            pad=15,
-                            thickness=15,
-                            line=dict(color="black", width=0.5),
-                            label=node_labels,
-                            color=['rgba(255,0,255, 0.8)' if label == "magenta" else 'blue' for label in node_labels]
-                        ),
-                        # Add links
-                        link=dict(
-                            source=[link['source'] for link in link_list],
-                            target=[link['target'] for link in link_list],
-                            value=[link['value'] for link in link_list],
-                            label=None,
-                            color=[map_title_to_color[node_labels[link['source']]] for link in link_list]
-                            # You can adjust the color here if needed
-                        ))
-                    ])
-
-                    sanfig.update_layout(title_text="Web Maps Connections to Layers in Portal",
-                                         font_size=18,
-                                         height=4000)
                     solara.FigurePlotly(sanfig)
 
             with solara.lab.Tab("Spring Layout", icon_name="mdi-chart-line"):
