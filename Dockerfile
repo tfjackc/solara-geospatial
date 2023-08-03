@@ -18,10 +18,6 @@ USER root
 RUN chown -R ${NB_UID} ${HOME}
 USER ${NB_USER}
 
-FROM ubuntu:latest
-RUN apt-get -y update
-RUN apt-get -y install git
-
 
 EXPOSE 8765
 

@@ -5,19 +5,7 @@ import solara
 import solara.lab
 import random
 # Assuming you have already imported the necessary libraries and read the data
-from huggingface_hub import Repository
-
-repo = Repository(
-    local_dir="csv_data",
-    repo_type="dataset",
-    clone_from="tfjackc/csv_data",
-    token=True
-)
-repo.git_pull()
-
-
-#dfwm = pd.read_csv("data/portalWebMaps_Test.csv")
-dfwm = pd.read_csv("portalWebMaps_Test.csv")
+dfwm = pd.read_csv("data/portalWebMaps_Test.csv")
 dfsubset = dfwm[['map_title', 'service_title', 'layer_url', 'share_settings', 'number_of_views']]
 tab_index = solara.reactive(0)
 
