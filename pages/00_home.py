@@ -4,21 +4,57 @@ import networkx as nx
 import solara
 import solara.lab
 import random
+import numpy as np
 # Assuming you have already imported the necessary libraries and read the data
 dfwm = pd.read_csv("data/portalWebMaps_Test.csv")
 dfsubset = dfwm[['map_title', 'service_title', 'layer_url', 'share_settings', 'number_of_views']]
-dfsub = dfwm[['map_title', 'service_title', 'share_settings', 'layer_url', 'number_of_views']]
-dfsubset_san = dfsub.sort_values(by=['number_of_views'], ascending=False)
+dfsubset_san = dfsubset.sort_values(by=['number_of_views'], ascending=False)
 dfsubset_san['layer_url'] = dfsubset_san['layer_url'].str.replace(r'^.*services/([^/]*)/.*$', r'\1', regex=True)
+#num_breaks = 4
+#dfsubset_san['views_class_breaks'] = pd.cut(dfsubset_san['number_of_views'], bins=num_breaks, precision=0)
+#dfsubset_san['quant_views'] = pd.qcut(dfsubset_san['number_of_views'], q=12, labels=[12,11,10,9,8,7,6,5,4,3,2,1])
+#print(dfsubset_san['quant_views'])
+
+dfsubset_san['quant_views'] = (((dfsubset_san['number_of_views'] / 250000) * 80) + 30)
+
+
+map_titles = dfsubset_san['map_title'].unique()
+webMaps = []
+map_title_to_color = {}
+mttc = {}
+for title in map_titles:
+    # Generate random RGB values in the range [0, 255]
+    red = random.randint(0, 255)
+    green = random.randint(0, 255)
+    blue = random.randint(0, 255)
+    # Convert RGB values to a valid color format (e.g., HEX or RGBA)
+    color = f'rgba({red},{green},{blue},0.3)'
+    k_color = f'rgba({red},{green},{blue},0.8)' # You can use HEX format if needed
+    # Assign the random color to the map_title
+    map_title_to_color[title] = color
+    mttc[title] = k_color
+    webMaps.append(title)
+
+select_wm = solara.reactive(webMaps)
+dfsubset_san['colors'] = [map_title_to_color[title] for title in dfsubset_san['map_title']]
+dfsubset_san['k_colors'] = [mttc[title] for title in dfsubset_san['map_title']]
+dfsubset_san['map_color'] = 'rgba(155,194,156,0.5)'
+dfsubset_san['service_color'] = 'rgba(199,85,46,0.5)'
+
+mapdict = dfsubset_san[['map_title', 'map_color']].to_dict('records')
+layerdict = dfsubset_san[['layer_url', 'service_color']].to_dict('records')
+
+#dfdict = dfsubset_san.to_dict()
+#print(dfdict)
 
 tab_index = solara.reactive(0)
 
 #spring layout
 G = nx.Graph()
-G = nx.from_pandas_edgelist(dfsubset, 'map_title', 'service_title')
+G = nx.from_pandas_edgelist(dfsubset_san, 'map_title', 'layer_url')
 
 # 1. Convert the NetworkX graph into a Plotly graph object
-pos = nx.spring_layout(G)  # Adjust the layout algorithm as needed
+pos = nx.kamada_kawai_layout(G)  # Adjust the layout algorithm as needed
 
 edge_x = []
 edge_y = []
@@ -46,6 +82,8 @@ for node in G.nodes():
     node_info = str(node) + "<br># of connections: " + str(len(list(G.neighbors(node))))
     node_text.append(node_info)
 
+#print([10 + 5 * len(list(G.neighbors(node))) for node in G.nodes()])
+
 node_trace = go.Scatter(
     x=node_x,
     y=node_y,
@@ -53,7 +91,9 @@ node_trace = go.Scatter(
     hoverinfo='text',
     mode='markers+text',
     marker=dict(
-        size=[10 + 5 * len(list(G.neighbors(node))) for node in G.nodes()],
+        #size=[10 + 5 * len(list(G.neighbors(node))) for node in G.nodes()],
+        size=dfsubset_san['quant_views'],
+        color=dfsubset_san['k_colors']
     ),
 )
 
@@ -62,27 +102,10 @@ fig = go.Figure(data=[edge_trace, node_trace], layout=go.Layout(
     showlegend=False,
     hovermode='closest',
     margin=dict(b=0, l=0, r=0, t=0),
-    xaxis=dict(showgrid=False, zeroline=False),
-    yaxis=dict(showgrid=False, zeroline=False),
+    xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+    yaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
     height=975
 ))
-
-map_titles = dfsubset_san['map_title'].unique()
-webMaps = []
-map_title_to_color = {}
-for title in map_titles:
-    # Generate random RGB values in the range [0, 255]
-    red = random.randint(0, 255)
-    green = random.randint(0, 255)
-    blue = random.randint(0, 255)
-    # Convert RGB values to a valid color format (e.g., HEX or RGBA)
-    color = f'rgba({red},{green},{blue},0.3)'  # You can use HEX format if needed
-    # Assign the random color to the map_title
-    map_title_to_color[title] = color
-    webMaps.append(title)
-
-select_wm = solara.reactive(webMaps)
-dfsubset_san['colors'] = [map_title_to_color[title] for title in dfsubset_san['map_title']]
 
 nodes = []
 links = []
@@ -147,7 +170,7 @@ def Page():
 
                     solara.FigurePlotly(sanfig)
 
-            with solara.lab.Tab("Spring Layout", icon_name="mdi-chart-line"):
+            with solara.lab.Tab("Kamada Kawai Layout", icon_name="mdi-chart-line"):
                 with solara.Card(style="height: 1000px;"):
 
                     solara.FigurePlotly(fig)
