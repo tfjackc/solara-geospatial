@@ -16,6 +16,7 @@ repo = Repository(
 repo.git_pull()
 
 
+#dfwm = pd.read_csv("data/portalWebMaps_Test.csv")
 dfwm = pd.read_csv("portalWebMaps_Test.csv")
 dfsubset = dfwm[['map_title', 'service_title', 'layer_url', 'share_settings', 'number_of_views']]
 tab_index = solara.reactive(0)
