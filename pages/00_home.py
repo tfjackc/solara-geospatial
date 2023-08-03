@@ -5,7 +5,7 @@ import solara
 import solara.lab
 import random
 # Assuming you have already imported the necessary libraries and read the data
-dfwm = pd.read_csv(r"portalWebMaps_Test.csv")
+dfwm = pd.read_csv("data/portalWebMaps_Test.csv")
 dfsubset = dfwm[['map_title', 'service_title', 'layer_url', 'share_settings', 'number_of_views']]
 dfsub = dfwm[['map_title', 'service_title', 'share_settings', 'layer_url', 'number_of_views']]
 dfsubset_san = dfsub.sort_values(by=['number_of_views'], ascending=False)
