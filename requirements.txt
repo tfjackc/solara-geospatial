@@ -4,3 +4,4 @@ mapwidget
 solara
 geopandas
 pydantic<2.0
+arcgis --no-deps

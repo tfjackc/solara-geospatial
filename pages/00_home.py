@@ -4,8 +4,6 @@ import networkx as nx
 import solara
 import solara.lab
 import random
-import numpy as np
-# https://geo.co.crook.or.us/portal/home/item.html?id=
 
 dfwm = pd.read_csv("data/portalWebMaps_Test.csv")
 dfsubset = dfwm[['map_title', 'item_id', 'service_title', 'layer_url', 'share_settings', 'number_of_views']]
@@ -22,14 +20,11 @@ for title in map_titles:
     red = random.randint(0, 255)
     green = random.randint(0, 255)
     blue = random.randint(0, 255)
-    color = f'rgba({red},{green},{blue},0.3)'
-    k_color = f'rgba({red},{green},{blue},0.8)'
+    color = f'rgba({red},{green},{blue},0.4)'
     map_title_to_color[title] = color
-    mttc[title] = k_color
     webMaps.append(title)
 
 dfsubset_san['colors'] = [map_title_to_color[title] for title in dfsubset_san['map_title']]
-#dfsubset_san['k_colors'] = [mttc[title] for title in dfsubset_san['map_title']]
 dfsubset_san['map_color'] = 'rgba(155,194,156,0.8)'
 dfsubset_san['service_color'] = 'rgba(199,85,46,0.8)'
 
@@ -44,16 +39,7 @@ def datavalues(value):
 def updateplot(dfsubset_san):
     map_titles = dfsubset_san['map_title'].unique()
     webMaps = []
-    map_title_to_color = {}
-    mttc = {}
     for title in map_titles:
-        red = random.randint(0, 255)
-        green = random.randint(0, 255)
-        blue = random.randint(0, 255)
-        color = f'rgba({red},{green},{blue},0.3)'
-        k_color = f'rgba({red},{green},{blue},0.8)'
-        map_title_to_color[title] = color
-        mttc[title] = k_color
         webMaps.append(title)
 
     dfsubset_san['map_color'] = 'rgba(155,194,156,0.9)'
@@ -102,7 +88,6 @@ def updateplot(dfsubset_san):
         hoverinfo='text',
         mode='markers+text',
         marker=dict(
-            # size=[10 + 5 * len(list(G.neighbors(node))) for node in G.nodes()],
             size=dfsubset_san['quant_views'],
             color=node_color
         ),
@@ -170,7 +155,7 @@ def Page():
         with solara.AppBarTitle():
             solara.Text("Crook County GIS Portal Map")
 
-        with solara.lab.Tabs(background_color="#0A2E52", dark=True):
+        with solara.lab.Tabs(background_color="#084685", dark=True):
 
             with solara.lab.Tab("Sankey Layout", icon_name="mdi-chart-line"):
                 with solara.Card(style="height: 1000px;"):
@@ -185,18 +170,15 @@ def Page():
                     datavalues(int_value.value)
 
         with solara.Sidebar():
-            solara.Markdown("Access Maps in Portal")
+            solara.Markdown("Access Web Map Overview in Portal")
             df = dfsubset[~dfsubset['map_title'].duplicated()]
             with solara.Column(gap="12px"):
                 for item in df.itertuples():
+                    #with solara.Row(gap="10px", justify="space-around"):
                     solara.Button(
                         f"{item.map_title}", href=f"https://geo.co.crook.or.us/portal/home/item.html?id={item.item_id}",
                         color="#FBEEC1"
                     )
-
-                    #on_click=f"(window.open('https://geo.co.crook.or.us/portal/home/item.html?id={item.item_id}'))",
-            # solara.SelectMultiple("Spring Layout - Layer Type", layers, all_layers)
-            # solara.Markdown(f"**Selected**: {layers.value}")
 
     return main
 
