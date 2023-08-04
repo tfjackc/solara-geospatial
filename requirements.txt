@@ -4,4 +4,10 @@ mapwidget
 solara
 geopandas
 pydantic<2.0
+ntlm-auth
+requests-ntlm
+requests-toolbelt
+requests
+ujson
+six
 arcgis --no-deps
