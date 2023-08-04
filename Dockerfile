@@ -1,5 +1,7 @@
 FROM jupyter/base-notebook:latest
-
+RUN conda create -n geo python=3.9
+RUN conda activate geo
+RUN conda install -c conda-forge mamba
 RUN mamba install -c conda-forge beautifulsoup4 plotly networkx pandas -y && \
     fix-permissions "${CONDA_DIR}" && \
     fix-permissions "/home/${NB_USER}"
