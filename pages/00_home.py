@@ -7,7 +7,7 @@ import random
 import numpy as np
 # https://geo.co.crook.or.us/portal/home/item.html?id=
 
-dfwm = pd.read_csv(r"portalWebMaps_Test.csv")
+dfwm = pd.read_csv("data/portalWebMaps_Test.csv")
 dfsubset = dfwm[['map_title', 'item_id', 'service_title', 'layer_url', 'share_settings', 'number_of_views']]
 dfsubset_san = dfsubset.sort_values(by=['number_of_views'], ascending=False)
 dfsubset_san['layer_url'] = dfsubset_san['layer_url'].str.replace(r'^.*services/([^/]*)/.*$', r'\1', regex=True)
