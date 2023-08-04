@@ -10,4 +10,3 @@ requests-toolbelt
 requests
 ujson
 six
-arcgis --no-deps
