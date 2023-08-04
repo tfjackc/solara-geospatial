@@ -191,7 +191,7 @@ def Page():
                 for item in df.itertuples():
                     solara.Button(
                         f"{item.map_title}", href=f"https://geo.co.crook.or.us/portal/home/item.html?id={item.item_id}",
-                        color="#D9D9D9"
+                        color="#FBEEC1"
                     )
 
                     #on_click=f"(window.open('https://geo.co.crook.or.us/portal/home/item.html?id={item.item_id}'))",
