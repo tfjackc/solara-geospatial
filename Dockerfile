@@ -14,7 +14,7 @@ ENV PATH="/opt/venv/bin:$PATH"
 
 # Update pip and install mamba (optional, but recommended for better dependency solving)
 RUN pip install --upgrade pip
-RUN mamba install -c conda-forge mamba
+RUN conda install -c conda-forge mamba
 
 # Install the required packages using mamba
 RUN mamba install -c conda-forge beautifulsoup4 plotly networkx pandas -y
