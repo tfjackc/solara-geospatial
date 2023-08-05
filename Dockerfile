@@ -8,7 +8,7 @@ RUN mamba install -c conda-forge beautifulsoup4 plotly networkx pandas -y && \
 
 COPY requirements.txt .
 RUN pip install -r requirements.txt
-RUN pip install arcgis --no-deps
+RUN echo pip install arcgis --no-deps
 
 RUN mkdir ./pages
 COPY /pages ./pages
