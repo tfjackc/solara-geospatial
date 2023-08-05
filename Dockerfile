@@ -1,5 +1,5 @@
 # Use the official Jupyter base-notebook image based on Python 3.9 from Docker Hub
-FROM jupyter/base-notebook:3.9.7
+FROM jupyter/base-notebook:python-3.9.6
 
 # Copy the requirements.txt file into the container
 COPY requirements.txt .
