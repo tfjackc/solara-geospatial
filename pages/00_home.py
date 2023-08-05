@@ -236,8 +236,9 @@ def Page():
 
 
         with solara.Sidebar():
-            solara.Markdown("Access Web Map Overview in Portal")
             solara.Button("Get Data", on_click=getData())
+            solara.Markdown("Access Web Map Overview in Portal")
+
             df = dfsubset[~dfsubset['map_title'].duplicated()]
             with solara.Column(gap="12px"):
                 for item in df.itertuples():
