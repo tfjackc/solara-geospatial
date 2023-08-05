@@ -13,7 +13,10 @@ RUN pip install -U pip
 
 # Install the solara package and other required packages
 RUN pip install solara ujson requests-toolbelt requests-ntlm ntlm-auth lxml requests_oauthlib geomet pandas plotly networkx
-RUN pip install arcgis --no-deps
+
+# Install specific versions of urllib3 and requests
+RUN pip install urllib3==1.26.7 requests==2.26.0 arcgis --no-deps
+
 # Set the working directory
 WORKDIR /app
 
@@ -33,6 +36,3 @@ EXPOSE 8765
 
 # Run the solara command
 CMD ["solara", "run", "./pages", "--host=0.0.0.0"]
-
-
-
