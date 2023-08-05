@@ -16,7 +16,7 @@ RUN pip install solara ujson requests-toolbelt requests-ntlm ntlm-auth lxml requ
 
 # Install specific versions of urllib3 and requests
 RUN pip install urllib3==1.26.7 requests==2.26.0 arcgis --no-deps
-
+RUN pip install notebook
 # Set the working directory
 WORKDIR /app
 
