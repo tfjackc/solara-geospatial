@@ -1,37 +1,39 @@
-# Use the official Jupyter base-notebook image based on Python 3.9.6 from Docker Hub
-FROM jupyter/base-notebook:python-3.9.6
+FROM python:3.9
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libxml2 \
+    libxslt1.1 \
+    libxml2-dev \
+    libxslt1-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-# Create and activate a conda environment
-RUN conda create -n myenv python=3.9 && \
-    echo "conda activate myenv" >> ~/.bashrc
-ENV PATH /opt/conda/envs/myenv/bin:$PATH
-SHELL ["/bin/bash", "--login", "-c"]
+RUN pip install -U pip
+RUN pip install solara
+RUN pip install ujson
+RUN pip install requests-toolbelt
+RUN pip install requests-ntlm
+RUN pip install ntlm-auth
 
-# Copy the requirements.txt file into the container
-COPY requirements.txt .
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libxslt1.1 \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install Python packages from requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install lxml
 
-# Create a directory for your application pages
+RUN pip install requests_oauthlib
+RUN pip install geomet
+
 RUN mkdir ./pages
+COPY /pages ./pages
 
-# Copy the pages folder into the container
-COPY pages ./pages
+COPY /data/portalWebMaps_Test.csv ./data/portalWebMaps_Test.csv
 
-# Copy the portalWebMaps_Test.csv data file into the container
-COPY data/portalWebMaps_Test.csv ./data/portalWebMaps_Test.csv
-
-# Set the environment variable for PROJ_LIB
 ENV PROJ_LIB='/opt/conda/share/proj'
 
-# Change ownership of the home directory to the NB_UID (non-root user)
 USER root
 RUN chown -R ${NB_UID} ${HOME}
 USER ${NB_USER}
 
-# Expose port 8765 (if your application uses this port)
+
 EXPOSE 8765
 
-# Set the default command to run your application using solara
 CMD ["solara", "run", "./pages", "--host=0.0.0.0"]
