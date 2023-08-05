@@ -9,7 +9,7 @@ RUN pip install --upgrade pip
 RUN pip install mamba
 
 # Install the required packages using mamba (or pip, if applicable)
-RUN mamba install -c conda-forge beautifulsoup4 plotly networkx pandas -y
+RUN mamba install -n geo -c conda-forge beautifulsoup4 plotly networkx pandas -y
 
 # Install ArcGIS package (or any other specific package with its dependencies)
 RUN mamba install -c esri arcgis --no-deps
