@@ -4,9 +4,9 @@ import networkx as nx
 import solara
 import solara.lab
 import random
-import os, datetime, collections
-from arcgis.gis import GIS
-import arcgis
+#import os, datetime, collections
+#from arcgis.gis import GIS
+#import arcgis
 
 
 dfwm = pd.read_csv("data/portalWebMaps_Test.csv")
@@ -108,63 +108,63 @@ def updateplot(dfsubset_san):
 
     return solara.FigurePlotly(fig)
 
-def getData():
-    # Portal Config
-    portal_URL = "https://geo.co.crook.or.us/portal"
-    portal_uName = "jack.colpitt"
-    portal_pWord = "@918Analyst_jhc"
-
-    # Output File Location
-    workDirectory = os.getcwd()
-
-    gis = GIS('{}'.format(portal_URL), '{}'.format(portal_uName), '{}'.format(portal_pWord))
-    search_results = gis.content.search(query='', item_type='Web Map', max_items=10000)
-    about = []
-
-    print("------scanning portal------")
-    for result in search_results:
-        owner = result.owner.rstrip('_cobgis')
-
-        dateCreated = datetime.datetime.fromtimestamp(result.created / 1000).strftime("%m/%d/%Y %I:%M:%S %p")
-        dateUpdated = datetime.datetime.fromtimestamp(result.modified / 1000).strftime("%m/%d/%Y %I:%M:%S %p")
-
-        if result.type == 'Web Map':
-            wmo = arcgis.mapping.WebMap(result)
-
-            ops_layers = wmo.definition['operationalLayers']
-
-            try:
-                if len(ops_layers) > 0:
-                    for op_layer in ops_layers:
-                        if op_layer['layerType'] != "ArcGISTiledImageServiceLayer":
-                            a = collections.OrderedDict()
-                            a['map_title'] = result.title
-                            a['type'] = result.type
-                            a['item_id'] = result.itemid
-                            a['owner'] = owner
-                            a['date_created'] = dateCreated
-                            a['date_updated'] = dateUpdated
-                            a['share_settings'] = result.access
-                            a['content_status'] = result.content_status
-                            a['total_storage'] = result.size
-                            a['number_of_views'] = result.numViews
-                            a['number_of_ratings'] = result.numRatings
-                            a['average_rating'] = result.avgRating
-                            a['layer_type'] = op_layer['layerType']
-                            a['service_title'] = op_layer['title']
-                            a['layer_url'] = op_layer['url']
-                            about.append(a)
-
-            except Exception as e:
-
-                a['layer_url'] = "error"
-                about.append(a)
-                continue
-
-    print("------processing complete------")
-    dfwm = pd.DataFrame.from_dict(about)
-    print(dfwm)
-    return dfwm
+# def getData():
+#     # Portal Config
+#     portal_URL = "https://geo.co.crook.or.us/portal"
+#     portal_uName = "jack.colpitt"
+#     portal_pWord = "@918Analyst_jhc"
+#
+#     # Output File Location
+#     workDirectory = os.getcwd()
+#
+#     gis = GIS('{}'.format(portal_URL), '{}'.format(portal_uName), '{}'.format(portal_pWord))
+#     search_results = gis.content.search(query='', item_type='Web Map', max_items=10000)
+#     about = []
+#
+#     print("------scanning portal------")
+#     for result in search_results:
+#         owner = result.owner.rstrip('_cobgis')
+#
+#         dateCreated = datetime.datetime.fromtimestamp(result.created / 1000).strftime("%m/%d/%Y %I:%M:%S %p")
+#         dateUpdated = datetime.datetime.fromtimestamp(result.modified / 1000).strftime("%m/%d/%Y %I:%M:%S %p")
+#
+#         if result.type == 'Web Map':
+#             wmo = arcgis.mapping.WebMap(result)
+#
+#             ops_layers = wmo.definition['operationalLayers']
+#
+#             try:
+#                 if len(ops_layers) > 0:
+#                     for op_layer in ops_layers:
+#                         if op_layer['layerType'] != "ArcGISTiledImageServiceLayer":
+#                             a = collections.OrderedDict()
+#                             a['map_title'] = result.title
+#                             a['type'] = result.type
+#                             a['item_id'] = result.itemid
+#                             a['owner'] = owner
+#                             a['date_created'] = dateCreated
+#                             a['date_updated'] = dateUpdated
+#                             a['share_settings'] = result.access
+#                             a['content_status'] = result.content_status
+#                             a['total_storage'] = result.size
+#                             a['number_of_views'] = result.numViews
+#                             a['number_of_ratings'] = result.numRatings
+#                             a['average_rating'] = result.avgRating
+#                             a['layer_type'] = op_layer['layerType']
+#                             a['service_title'] = op_layer['title']
+#                             a['layer_url'] = op_layer['url']
+#                             about.append(a)
+#
+#             except Exception as e:
+#
+#                 a['layer_url'] = "error"
+#                 about.append(a)
+#                 continue
+#
+#     print("------processing complete------")
+#     dfwm = pd.DataFrame.from_dict(about)
+#     print(dfwm)
+#     return dfwm
 
 nodes = []
 links = []
@@ -230,9 +230,9 @@ def Page():
                     solara.Markdown(f"value: {int_value.value}")
                     datavalues(int_value.value)
 
-            with solara.lab.Tab("DataFrame", icon_name=""):
-                with solara.Card(style="height: 1000px;"):
-                    getData()
+            # with solara.lab.Tab("DataFrame", icon_name=""):
+            #     with solara.Card(style="height: 1000px;"):
+            #         getData()
 
 
         with solara.Sidebar():

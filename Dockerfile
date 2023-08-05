@@ -1,39 +1,23 @@
-FROM python:3.9
+FROM jupyter/base-notebook:latest
 
-# Install system dependencies (if required)
-# ...
+RUN mamba install -c conda-forge beautifulsoup4 plotly networkx pandas -y && \
+    fix-permissions "${CONDA_DIR}" && \
+    fix-permissions "/home/${NB_USER}"
 
-# Download and install Miniconda
-RUN curl -LO https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-RUN bash Miniconda3-latest-Linux-x86_64.sh -b -p /opt/conda
-ENV PATH="/opt/conda/bin:$PATH"
-
-# Create a virtual environment and activate it
-RUN python -m venv /opt/venv
-ENV PATH="/opt/venv/bin:$PATH"
-
-# Update pip and install mamba (optional, but recommended for better dependency solving)
-RUN pip install --upgrade pip
-RUN conda install -c conda-forge mamba
-
-# Install the required packages using mamba
-RUN mamba install -c conda-forge beautifulsoup4 plotly networkx pandas -y
-
-# Install ArcGIS package (or any other specific package with its dependencies)
-RUN mamba install -c esri arcgis --no-deps
-
-# Copy your project files
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
-COPY pages ./pages
-COPY data/portalWebMaps_Test.csv ./data/portalWebMaps_Test.csv
+RUN mkdir ./pages
+COPY /pages ./pages
 
-ENV PROJ_LIB='/opt/venv/share/proj'
+COPY /data/portalWebMaps_Test.csv ./data/portalWebMaps_Test.csv
+
+ENV PROJ_LIB='/opt/conda/share/proj'
 
 USER root
 RUN chown -R ${NB_UID} ${HOME}
 USER ${NB_USER}
+
 
 EXPOSE 8765
 
