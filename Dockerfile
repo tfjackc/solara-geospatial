@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN pip install -U pip
 
 # Install the solara package and other required packages
-RUN pip install solara ujson requests-toolbelt requests-ntlm ntlm-auth lxml requests_oauthlib geomet pandas plotly
+RUN pip install solara ujson requests-toolbelt requests-ntlm ntlm-auth lxml requests_oauthlib geomet pandas plotly networkx
 
 # Set the working directory
 WORKDIR /app
