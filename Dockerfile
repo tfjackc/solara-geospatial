@@ -1,9 +1,5 @@
 FROM jupyter/base-notebook:latest
 
-RUN mamba install -c conda-forge beautifulsoup4 plotly networkx pandas -y && \
-    fix-permissions "${CONDA_DIR}" && \
-    fix-permissions "/home/${NB_USER}"
-
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
