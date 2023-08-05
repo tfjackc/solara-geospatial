@@ -174,10 +174,10 @@ def Page():
                     solara.Markdown(f"value: {int_value.value}")
                     datavalues(int_value.value)
 
-            with solara.lab.Tab("DataFrame", icon_name=""):
-                with solara.Card(style="height: 1000px;"):
-                    #getData()
-                    solara.Markdown("data might go here")
+            # with solara.lab.Tab("DataFrame", icon_name=""):
+            #     with solara.Card(style="height: 1000px;"):
+            #         #getData()
+            #         solara.Markdown("data might go here")
 
         with solara.Sidebar():
             #solara.Button("Get Data", on_click=getData())
