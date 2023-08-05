@@ -8,7 +8,11 @@ RUN mamba install -c conda-forge beautifulsoup4 plotly networkx pandas -y && \
 
 COPY requirements.txt .
 RUN pip install -r requirements.txt
-RUN echo pip install arcgis --no-deps
+
+FROM jupyter/base-notebook:latest
+RUN mamba install -c esri arcgis --no-deps && \
+    fix-permissions "${CONDA_DIR}" && \
+    fix-permissions "/home/${NB_USER}"
 
 RUN mkdir ./pages
 COPY /pages ./pages
