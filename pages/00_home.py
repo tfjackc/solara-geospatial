@@ -232,8 +232,8 @@ def Page():
 
             with solara.lab.Tab("DataFrame", icon_name=""):
                 with solara.Card(style="height: 1000px;"):
-                    getData()
-
+                    #getData()
+                    solara.Markdown("data might go here")
 
         with solara.Sidebar():
             solara.Button("Get Data", on_click=getData())
