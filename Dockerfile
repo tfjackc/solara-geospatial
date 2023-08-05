@@ -18,7 +18,6 @@ RUN mamba install -c conda-forge beautifulsoup4 plotly networkx pandas -y && \
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
-FROM jupyter/base-notebook:latest
 RUN mamba install -c esri arcgis --no-deps
 
 RUN mkdir ./pages
