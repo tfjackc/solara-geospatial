@@ -10,9 +10,7 @@ COPY requirements.txt .
 RUN pip install -r requirements.txt
 
 FROM jupyter/base-notebook:latest
-RUN mamba install -c esri arcgis --no-deps && \
-    fix-permissions "${CONDA_DIR}" && \
-    fix-permissions "/home/${NB_USER}"
+RUN mamba install -c esri arcgis --no-deps
 
 RUN mkdir ./pages
 COPY /pages ./pages
