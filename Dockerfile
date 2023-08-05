@@ -1,3 +1,7 @@
+FROM jupyter/base-notebook:latest
+RUN conda create -n geo python=3.9
+RUN echo conda activate geo
+
 FROM python:3.9
 
 # Create a virtual environment and activate it
@@ -30,5 +34,3 @@ USER ${NB_USER}
 EXPOSE 8765
 
 CMD ["solara", "run", "./pages", "--host=0.0.0.0"]
-
-#ith these changes, your Dockerfile should now create a virtual environment using Python 3.9 and install the required packages, including ArcGIS, using the appropriate Python version. Make sure to update any other dependencies or system-level packages according to your project's requirements.
