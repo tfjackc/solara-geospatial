@@ -1,4 +1,6 @@
 FROM python:3.9
+
+# Install necessary dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libxml2 \
     libxslt1.1 \
@@ -6,29 +8,28 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libxslt1-dev \
     && rm -rf /var/lib/apt/lists/*
 
+# Upgrade pip
 RUN pip install -U pip
-RUN pip install solara
-RUN pip install ujson
-RUN pip install requests-toolbelt
-RUN pip install requests-ntlm
-RUN pip install ntlm-auth
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libxslt1.1 \
-    && rm -rf /var/lib/apt/lists/*
+# Install the solara package and other required packages
+RUN pip install solara ujson requests-toolbelt requests-ntlm ntlm-auth lxml requests_oauthlib geomet
 
-RUN pip install lxml
+# Set the working directory
+WORKDIR /app
 
-RUN pip install requests_oauthlib
-RUN pip install geomet
+# Create the .solara directory inside the user's home directory
+ENV HOME=/app
+RUN mkdir -p $HOME/.solara
 
-RUN mkdir ./pages
-COPY /pages ./pages
+# Copy your pages and data files
+COPY pages /app/pages
+COPY data/portalWebMaps_Test.csv /app/data/portalWebMaps_Test.csv
 
-COPY /data/portalWebMaps_Test.csv ./data/portalWebMaps_Test.csv
-
+# Set the PROJ_LIB environment variable
 ENV PROJ_LIB='/opt/conda/share/proj'
 
+# Expose the port
 EXPOSE 8765
 
+# Run the solara command
 CMD ["solara", "run", "./pages", "--host=0.0.0.0"]
