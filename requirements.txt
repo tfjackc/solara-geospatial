@@ -217,6 +217,7 @@ jupyterlab-pygments==0.2.2
 jupyterlab_server==2.24.0
 jupyterlab-widgets==1.1.4
 keplergl==0.3.2
+keyring>=23.3.0
 kiwisolver==1.4.4
 large-image==1.23.2
 large-image-source-rasterio==1.23.1
