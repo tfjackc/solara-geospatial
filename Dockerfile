@@ -1,5 +1,11 @@
-# Use the official Jupyter base-notebook image based on Python 3.9 from Docker Hub
+# Use the official Jupyter base-notebook image based on Python 3.9.6 from Docker Hub
 FROM jupyter/base-notebook:python-3.9.6
+
+# Create and activate a conda environment
+RUN conda create -n myenv python=3.9 && \
+    echo "conda activate myenv" >> ~/.bashrc
+ENV PATH /opt/conda/envs/myenv/bin:$PATH
+SHELL ["/bin/bash", "--login", "-c"]
 
 # Copy the requirements.txt file into the container
 COPY requirements.txt .
