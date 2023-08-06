@@ -4,10 +4,6 @@ import networkx as nx
 import solara
 import solara.lab
 import random
-# import os, datetime, collections
-# from arcgis.gis import GIS
-# import arcgis
-
 
 dfwm = pd.read_csv("data/portalWebMaps_Test.csv")
 dfsubset = dfwm[['map_title', 'item_id', 'service_title', 'layer_url', 'share_settings', 'number_of_views']]
@@ -152,7 +148,7 @@ sanfig = go.Figure(data=[sankey_trace])
 
 sanfig.update_layout(title_text="Web Maps Connections to Layers in Portal",
                      font_size=18,
-                     height=4000)
+                     height=6000)
 
 @solara.component
 def Page():
@@ -163,12 +159,12 @@ def Page():
         with solara.lab.Tabs(background_color="#084685", dark=True):
 
             with solara.lab.Tab("Sankey Layout", icon_name="mdi-chart-line"):
-                with solara.Card(style="height: 1000px;"):
+                with solara.Card(style="height: 6000px;"):
 
                     solara.FigurePlotly(sanfig)
 
             with solara.lab.Tab("Spring Layout", icon_name="mdi-chart-line"):
-                with solara.Card(style="height: 1000px;"):
+                with solara.Card(style="height: 1250px;"):
                     solara.SliderInt("Spring Layout - Node Size", value=int_value, min=30, max=70, on_value=datavalues)
                     solara.Button("Reset", on_click=lambda: int_value.set(42))
                     solara.Markdown(f"value: {int_value.value}")
