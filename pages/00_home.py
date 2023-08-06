@@ -20,7 +20,7 @@ for title in map_titles:
     red = random.randint(0, 255)
     green = random.randint(0, 255)
     blue = random.randint(0, 255)
-    color = f'rgba({red},{green},{blue},0.4)'
+    color = f'rgba({red},{green},{blue},0.55)'
     map_title_to_color[title] = color
     webMaps.append(title)
 
@@ -105,7 +105,6 @@ def updateplot(dfsubset_san):
     return solara.FigurePlotly(fig)
 
 
-
 nodes = []
 links = []
 def add_node(node_name):
@@ -170,15 +169,12 @@ def Page():
                     solara.Markdown(f"value: {int_value.value}")
                     datavalues(int_value.value)
 
-            # with solara.lab.Tab("DataFrame", icon_name=""):
-            #     with solara.Card(style="height: 1000px;"):
-            #         #getData()
-            #         solara.Markdown("data might go here")
+            with solara.lab.Tab("DataFrame", icon_name="mdi-database"):
+                with solara.Card(style="height: 1070px;"):
+                    solara.DataFrame(dfsubset.sort_values(by=['number_of_views'], ascending=False), items_per_page=40)
 
         with solara.Sidebar():
-            #solara.Button("Get Data", on_click=getData())
             solara.Markdown("Access Web Map Overview in Portal")
-
             df = dfsubset[~dfsubset['map_title'].duplicated()]
             with solara.Column(gap="12px"):
                 for item in df.itertuples():
@@ -189,4 +185,5 @@ def Page():
                     )
 
     return main
+
 
