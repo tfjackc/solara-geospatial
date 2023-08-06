@@ -159,12 +159,12 @@ def Page():
         with solara.lab.Tabs(background_color="#084685", dark=True):
 
             with solara.lab.Tab("Sankey Layout", icon_name="mdi-chart-line"):
-                with solara.Card(style="height: 6000px;"):
+                with solara.Card(style="height: 6050px;"):
 
                     solara.FigurePlotly(sanfig)
 
             with solara.lab.Tab("Spring Layout", icon_name="mdi-chart-line"):
-                with solara.Card(style="height: 1250px;"):
+                with solara.Card(style="height: 1125px;"):
                     solara.SliderInt("Spring Layout - Node Size", value=int_value, min=30, max=70, on_value=datavalues)
                     solara.Button("Reset", on_click=lambda: int_value.set(42))
                     solara.Markdown(f"value: {int_value.value}")
@@ -185,7 +185,7 @@ def Page():
                     #with solara.Row(gap="10px", justify="space-around"):
                     solara.Button(
                         f"{item.map_title}", href=f"https://geo.co.crook.or.us/portal/home/item.html?id={item.item_id}",
-                        color="#FBEEC1"
+                        color="#AFC4D9"
                     )
 
     return main
