@@ -11,6 +11,7 @@ dfsubset_san = dfsubset.sort_values(by=['number_of_views'], ascending=False)
 dfsubset_san['layer_url'] = dfsubset_san['layer_url'].str.replace(r'^.*services/([^/]*)/.*$', r'\1', regex=True)
 
 int_value = solara.reactive(30)
+iter_slider = solara.reactive(50)
 
 map_titles = dfsubset_san['map_title'].unique()
 webMaps = []
@@ -25,8 +26,8 @@ for title in map_titles:
     webMaps.append(title)
 
 dfsubset_san['colors'] = [map_title_to_color[title] for title in dfsubset_san['map_title']]
-dfsubset_san['map_color'] = 'rgba(155,194,156,0.8)'
-dfsubset_san['service_color'] = 'rgba(199,85,46,0.8)'
+dfsubset_san['map_color'] = 'rgba(54,214,172,0.8)'
+dfsubset_san['service_color'] = 'rgba(99,110,250,0.8)'
 
 dfcolors = pd.DataFrame()
 dfcolors[['item', 'colors']] = dfsubset_san[['map_title', 'map_color']]
@@ -42,8 +43,8 @@ def updateplot(dfsubset_san):
     for title in map_titles:
         webMaps.append(title)
 
-    dfsubset_san['map_color'] = 'rgba(155,194,156,0.9)'
-    dfsubset_san['service_color'] = 'rgba(199,85,46,0.9)'
+    dfsubset_san['map_color'] = 'rgba(54,214,172,0.9)'
+    dfsubset_san['service_color'] = 'rgba(99,110,250,0.9)'
 
     G = nx.Graph()
     G = nx.from_pandas_edgelist(dfsubset_san, 'map_title', 'service_title')
@@ -56,6 +57,7 @@ def updateplot(dfsubset_san):
         x1, y1 = pos[edge[1]]
         edge_x += [x0, x1, None]
         edge_y += [y0, y1, None]
+        print(str(edge))
 
     edge_trace = go.Scatter(
         x=edge_x,
@@ -164,9 +166,10 @@ def Page():
 
             with solara.lab.Tab("Spring Layout", icon_name="mdi-chart-line"):
                 with solara.Card(style="height: 1125px;"):
-                    solara.SliderInt("Spring Layout - Node Size", value=int_value, min=30, max=70, on_value=datavalues)
+                    solara.SliderInt("Node Size", value=int_value, min=30, max=70, on_value=datavalues)
                     solara.Button("Reset", on_click=lambda: int_value.set(42))
                     solara.Markdown(f"value: {int_value.value}")
+                    #solara.SliderInt("Iterations", value=iter_slider, min=10, max=10000, on_value=datavalues)
                     datavalues(int_value.value)
 
             with solara.lab.Tab("DataFrame", icon_name="mdi-database"):
