@@ -11,6 +11,7 @@ RUN mkdir ./pages
 COPY /pages ./pages
 
 COPY /data/portalWebMaps_Test.csv ./data/portalWebMaps_Test.csv
+COPY /data/solo_layers.csv ./data/solo_layers.csv
 
 ENV PROJ_LIB='/opt/conda/share/proj'
 

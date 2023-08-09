@@ -6,6 +6,7 @@ import solara.lab
 import random
 
 dfwm = pd.read_csv("data/portalWebMaps_Test.csv")
+dfsolo = pd.read_csv("data/solo_layers.csv")
 dfsubset = dfwm[['map_title', 'item_id', 'service_title', 'layer_url', 'share_settings', 'number_of_views']]
 dfsubset_san = dfsubset.sort_values(by=['number_of_views'], ascending=False)
 dfsubset_san['layer_url'] = dfsubset_san['layer_url'].str.replace(r'^.*services/([^/]*)/.*$', r'\1', regex=True)
@@ -57,7 +58,6 @@ def updateplot(dfsubset_san):
         x1, y1 = pos[edge[1]]
         edge_x += [x0, x1, None]
         edge_y += [y0, y1, None]
-        print(str(edge))
 
     edge_trace = go.Scatter(
         x=edge_x,
@@ -151,6 +151,72 @@ sanfig.update_layout(title_text="Web Maps Connections to Layers in Portal",
                      font_size=18,
                      height=6000)
 
+dfsolo = pd.read_csv(r"solo_layers.csv")
+#df['service_layers'] = df['service_layers'].str.replace(r'^.*services/([^/]*)/.*$', r'\1', regex=True)
+map_titles = dfsolo['map_title'].unique()
+webMaps = []
+map_title_to_color = {}
+mttc = {}
+for title in map_titles:
+    red = random.randint(0, 255)
+    green = random.randint(0, 255)
+    blue = random.randint(0, 255)
+    color = f'rgba({red},{green},{blue},0.55)'
+    map_title_to_color[title] = color
+    webMaps.append(title)
+
+dfsolo['colors'] = [map_title_to_color[title] for title in dfsolo['map_title']]
+dfsolo['map_color'] = 'rgba(54,214,172,0.8)'
+dfsolo['service_color'] = 'rgba(99,110,250,0.8)'
+
+dfcolors = pd.DataFrame()
+dfcolors[['item', 'colors']] = dfsolo[['map_title', 'map_color']]
+dfcolors = pd.concat([dfcolors, dfsolo[['layer_url', 'service_color']].rename(columns={'layer_url': 'item', 'service_color': 'colors'})], ignore_index=True)
+
+
+nodes = []
+links = []
+def add_node(node_name):
+    if node_name not in nodes:
+        nodes.append(node_name)
+def add_link(source, target, value, views, color):
+    add_node(source)
+    add_node(target)
+    add_node(views)
+    links.append({"source": nodes.index(source), "target": nodes.index(target), "views": nodes.index(views), "color": color, 'value': value})
+
+for item in zip(dfsolo['map_title'], dfsolo['layer_url'], dfsolo['number_of_views'], dfsolo['service_title'], dfsolo['colors'], dfsolo['service_layers']):
+    source = f"{item[5]}"
+    target = f"{item[0]}"
+    value = 1
+    color = f"{item[4]}"
+    views = f"{item[2]}"
+    add_link(source, target, value, views, color)
+
+sankey_solo = go.Sankey(
+    arrangement="freeform",
+    node=dict(
+        pad=30,
+        thickness=15,
+        line=dict(color="black", width=0.5),
+        label=nodes,
+        color=[link["color"] for link in links]
+
+    ),
+    link=dict(
+        source=[link["source"] for link in links],
+        target=[link["target"] for link in links],
+        value=[link["value"] for link in links],
+        color=[link["color"] for link in links]
+    )
+)
+
+sanfig_solo = go.Figure(data=[sankey_solo])
+
+sanfig_solo.update_layout(title_text="Web Maps Connections to Layers in Portal",
+                     font_size=18,
+                     height=6000)
+
 @solara.component
 def Page():
     with solara.Column() as main:
@@ -163,6 +229,11 @@ def Page():
                 with solara.Card(style="height: 6050px;"):
 
                     solara.FigurePlotly(sanfig)
+
+            with solara.lab.Tab("Layers -> Web Maps", icon_name="mdi-chart-line"):
+                with solara.Card(style="height: 6050px;"):
+
+                    solara.FigurePlotly(sanfig_solo)
 
             with solara.lab.Tab("Spring Layout", icon_name="mdi-chart-line"):
                 with solara.Card(style="height: 1125px;"):
