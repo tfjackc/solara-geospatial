@@ -151,7 +151,6 @@ sanfig.update_layout(title_text="Web Maps Connections to Layers in Portal",
                      font_size=18,
                      height=6000)
 
-dfsolo = pd.read_csv(r"solo_layers.csv")
 #df['service_layers'] = df['service_layers'].str.replace(r'^.*services/([^/]*)/.*$', r'\1', regex=True)
 map_titles = dfsolo['map_title'].unique()
 webMaps = []
@@ -213,7 +212,7 @@ sankey_solo = go.Sankey(
 
 sanfig_solo = go.Figure(data=[sankey_solo])
 
-sanfig_solo.update_layout(title_text="Web Maps Connections to Layers in Portal",
+sanfig_solo.update_layout(title_text="Layer Connections to Web Maps in Portal",
                      font_size=18,
                      height=6000)
 
