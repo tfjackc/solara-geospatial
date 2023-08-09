@@ -175,15 +175,6 @@ dfcolors = pd.concat([dfcolors, dfsolo[['layer_url', 'service_color']].rename(co
 
 nodes = []
 links = []
-def add_node(node_name):
-    if node_name not in nodes:
-        nodes.append(node_name)
-def add_link(source, target, value, views, color):
-    add_node(source)
-    add_node(target)
-    add_node(views)
-    links.append({"source": nodes.index(source), "target": nodes.index(target), "views": nodes.index(views), "color": color, 'value': value})
-
 for item in zip(dfsolo['map_title'], dfsolo['layer_url'], dfsolo['number_of_views'], dfsolo['service_title'], dfsolo['colors'], dfsolo['service_layers']):
     source = f"{item[5]}"
     target = f"{item[0]}"
