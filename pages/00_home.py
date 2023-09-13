@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import plotly.graph_objects as go
 import networkx as nx
 import solara
@@ -7,7 +8,8 @@ import random
 
 dfwm = pd.read_csv("data/portalWebMaps_Test.csv")
 dfsolo = pd.read_csv("data/solo_layers.csv")
-dfsubset = dfwm[['map_title', 'item_id', 'service_title', 'layer_url', 'share_settings', 'number_of_views']]
+dfwm['storage'] = np.where(dfwm['layer_url'].str.contains('Hosted'), 'Hosted', 'Referenced')
+dfsubset = dfwm[['map_title', 'item_id', 'service_title', 'layer_url', 'share_settings', 'number_of_views', 'storage']]
 dfsubset_san = dfsubset.sort_values(by=['number_of_views'], ascending=False)
 dfsubset_san['layer_url'] = dfsubset_san['layer_url'].str.replace(r'^.*services/([^/]*)/.*$', r'\1', regex=True)
 
@@ -216,17 +218,17 @@ def Page():
         with solara.lab.Tabs(background_color="#084685", dark=True):
 
             with solara.lab.Tab("Sankey Layout", icon_name="mdi-chart-line"):
-                with solara.Card(style="height: 6050px;"):
+                with solara.Card():
 
                     solara.FigurePlotly(sanfig)
 
             with solara.lab.Tab("Layers -> Web Maps", icon_name="mdi-chart-line"):
-                with solara.Card(style="height: 6050px;"):
+                with solara.Card():
 
                     solara.FigurePlotly(sanfig_solo)
 
             with solara.lab.Tab("Spring Layout", icon_name="mdi-chart-line"):
-                with solara.Card(style="height: 1125px;"):
+                with solara.Card():
                     solara.SliderInt("Node Size", value=int_value, min=30, max=70, on_value=datavalues)
                     solara.Button("Reset", on_click=lambda: int_value.set(42))
                     solara.Markdown(f"value: {int_value.value}")
@@ -234,8 +236,12 @@ def Page():
                     datavalues(int_value.value)
 
             with solara.lab.Tab("DataFrame", icon_name="mdi-database"):
-                with solara.Card(style="height: 1070px;"):
-                    solara.DataFrame(dfsubset.sort_values(by=['number_of_views'], ascending=False), items_per_page=40)
+                solara.provide_cross_filter()
+                with solara.Card():
+                    solara.CrossFilterReport(dfsubset, classes=["py-2"])
+                    solara.CrossFilterSelect(dfsubset, "map_title")
+                    solara.CrossFilterDataFrame(dfsubset)
+                    #solara.DataFrame(dfsubset.sort_values(by=['number_of_views'], ascending=False), items_per_page=40)
 
         with solara.Sidebar():
             solara.Markdown("Access Web Map Overview in Portal")
