@@ -10,9 +10,10 @@ RUN pip install -r requirements.txt
 RUN mkdir ./pages
 COPY /pages ./pages
 
+COPY /data/bend_data.geojson ./data/bend_data.geojson
 COPY /data/portalWebMaps_Test.csv ./data/portalWebMaps_Test.csv
 COPY /data/solo_layers.csv ./data/solo_layers.csv
-COPY /data/bend_data.geojson ./data/bend_data.geojson
+
 
 ENV PROJ_LIB='/opt/conda/share/proj'
 
