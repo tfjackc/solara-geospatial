@@ -1,0 +1,1 @@
+{"type":"FeatureCollection","features":[{"type":"Feature","properties":{"Id":1,"Title":"bend","Value":"downtown"},"geometry":{"type":"Point","coordinates":[-121.31567,44.0578]}},{"type":"Feature","properties":{"Id":2,"Title":"bend","Value":"pilot_butte"},"geometry":{"type":"Point","coordinates":[-121.282797,44.060144]}}]}
