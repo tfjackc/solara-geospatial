@@ -11,7 +11,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build image
-        run: docker build -t tfjackc/web-apps:surveyapp-v1 .
+        run: docker build -t tfjackc/web-apps:enterprise_v1.2 .
 
       - name: Login to Docker Hub
         run: echo ${{ secrets.DOCKER_HUB_TOKEN }} | docker login -u tfjackc --password-stdin
