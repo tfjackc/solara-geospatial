@@ -6,6 +6,7 @@ import solara
 import solara.lab
 import random
 
+# access data from csv...
 dfwm = pd.read_csv("data/portalWebMaps_Test.csv")
 dfsolo = pd.read_csv("data/solo_layers.csv")
 dfwm['storage'] = np.where(dfwm['layer_url'].str.contains('Hosted'), 'Hosted', 'Referenced')
