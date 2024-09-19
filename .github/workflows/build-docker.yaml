@@ -1,0 +1,20 @@
+name: Build and Publish to Docker Hub
+on:
+  pull_request:
+    branches:
+      - main
+jobs:
+  publish_images:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build image
+        run: docker build -t tfjackc/web-apps:surveyapp-v1 .
+
+      - name: Login to Docker Hub
+        run: echo ${{ secrets.DOCKER_HUB_TOKEN }} | docker login -u tfjackc --password-stdin
+
+      - name: Push to Docker Hub
+        run: docker push tfjackc/web-apps:enterprise_v1.2
