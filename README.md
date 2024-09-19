@@ -1,14 +1,12 @@
----
-title: cc_gis_portal
-emoji: 🌍
-colorFrom: green
-colorTo: red
-sdk: docker
-pinned: false
-license: mit
-app_port: 8765
-duplicated_from: giswqs/solara-geospatial
----
+## ArcGIS Enterprise Data Inventory w/ Python
+
+### Data Visulization Libraries:
+https://plotly.com/
+https://networkx.org/
+
+### Web Framework:
+https://solara.dev/
+
 
 
 
