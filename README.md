@@ -1,12 +1,15 @@
-## ArcGIS Enterprise Data Inventory w/ Python
+## Open Source Mapping w/ Python
 
-#### Map out your ArcGIS Enterprise Portal by connecting Web Maps to Web Services.
+#### Leafmap, GeoPandas, Localtileserver
 
-![image](./solara_enterprise.png)
+[//]: # (![image]&#40;./solara_enterprise.png&#41;)
 
-### Data Visulization Libraries:
-https://plotly.com/
-https://networkx.org/
+[//]: # ()
+[//]: # (### Data Visulization Libraries:)
+
+[//]: # (https://plotly.com/)
+
+[//]: # (https://networkx.org/)
 
 ### Web Framework:
 https://solara.dev/
