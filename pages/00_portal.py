@@ -36,9 +36,11 @@ dfcolors = pd.DataFrame()
 dfcolors[['item', 'colors']] = dfsubset_san[['map_title', 'map_color']]
 dfcolors = pd.concat([dfcolors, dfsubset_san[['layer_url', 'service_color']].rename(columns={'layer_url': 'item', 'service_color': 'colors'})], ignore_index=True)
 
+
 def datavalues(value):
     dfsubset_san['quant_views'] = (((dfsubset_san['number_of_views'] / 250000) * 80) + value)
     updateplot(dfsubset_san)
+
 
 def updateplot(dfsubset_san):
     map_titles = dfsubset_san['map_title'].unique()
@@ -111,14 +113,19 @@ def updateplot(dfsubset_san):
 
 nodes = []
 links = []
+
+
 def add_node(node_name):
     if node_name not in nodes:
         nodes.append(node_name)
+
+
 def add_link(source, target, value, views, color):
     add_node(source)
     add_node(target)
     add_node(views)
     links.append({"source": nodes.index(source), "target": nodes.index(target), "views": nodes.index(views), "color": color, 'value': value})
+
 
 for item in zip(dfsubset_san['map_title'], dfsubset_san['layer_url'], dfsubset_san['number_of_views'], dfsubset_san['service_title'], dfsubset_san['colors']):
     source = f"{item[0]}"
@@ -153,7 +160,6 @@ sanfig.update_layout(title_text="Web Maps Connections to Layers in Portal",
                      font_size=18,
                      height=6000)
 
-#df['service_layers'] = df['service_layers'].str.replace(r'^.*services/([^/]*)/.*$', r'\1', regex=True)
 map_titles = dfsolo['map_title'].unique()
 webMaps = []
 map_title_to_color = {}
@@ -205,9 +211,11 @@ sankey_solo = go.Sankey(
 
 sanfig_solo = go.Figure(data=[sankey_solo])
 
-sanfig_solo.update_layout(title_text="Layer Connections to Web Maps in Portal",
-                     font_size=18,
-                     height=6000)
+sanfig_solo.update_layout(
+    title_text="Layer Connections to Web Maps in Portal",
+    font_size=18,
+    height=6000
+)
 
 @solara.component
 def Page():
@@ -232,7 +240,6 @@ def Page():
                     solara.SliderInt("Node Size", value=int_value, min=30, max=70, on_value=datavalues)
                     solara.Button("Reset", on_click=lambda: int_value.set(42))
                     solara.Markdown(f"value: {int_value.value}")
-                    #solara.SliderInt("Iterations", value=iter_slider, min=10, max=10000, on_value=datavalues)
                     datavalues(int_value.value)
 
             with solara.lab.Tab("DataFrame", icon_name="mdi-database"):
@@ -241,14 +248,12 @@ def Page():
                     solara.CrossFilterReport(dfsubset, classes=["py-2"])
                     solara.CrossFilterSelect(dfsubset, "map_title")
                     solara.CrossFilterDataFrame(dfsubset)
-                    #solara.DataFrame(dfsubset.sort_values(by=['number_of_views'], ascending=False), items_per_page=40)
 
         with solara.Sidebar():
             solara.Markdown("Access Web Map Overview in Portal")
             df = dfsubset[~dfsubset['map_title'].duplicated()]
             with solara.Column(gap="12px"):
                 for item in df.itertuples():
-                    #with solara.Row(gap="10px", justify="space-around"):
                     solara.Button(
                         f"{item.map_title}", href=f"https://geo.co.crook.or.us/portal/home/item.html?id={item.item_id}",
                         color="#AFC4D9"

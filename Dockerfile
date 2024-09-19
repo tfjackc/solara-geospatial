@@ -14,13 +14,11 @@ COPY /data/bend_data.geojson ./data/bend_data.geojson
 COPY /data/portalWebMaps_Test.csv ./data/portalWebMaps_Test.csv
 COPY /data/solo_layers.csv ./data/solo_layers.csv
 
-
 ENV PROJ_LIB='/opt/conda/share/proj'
 
 USER root
 RUN chown -R ${NB_UID} ${HOME}
 USER ${NB_USER}
-
 
 EXPOSE 8765
 
